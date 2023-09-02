@@ -33,9 +33,9 @@ app.get('/',(req,res)=>{
 let roomIdGlobal,imgUrlGlobal;
 
 io.on("connection",(socket)=>{
-    console.log("user connected",socket.id)
+    //console.log("user connected",socket.id)
     socket.on("userJoined",(data)=>{
-        console.log("user-joined")
+        //console.log("user-joined")
         const {name,roomId,userId,host,presenter}=data;
         roomIdGlobal = roomId
         //socket.roomId = roomId;

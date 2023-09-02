@@ -3,7 +3,7 @@ const users =[];
 const addUser =(name,userId,roomId,host,presenter)=>{
     const user ={name,userId,roomId,host,presenter}
     users.push(user)
-    return users.filter((user)=>user.roomId===roomId);;
+    return users.filter((user)=>user.roomId===roomId);
 }
 
 const removeUser =(id)=>{

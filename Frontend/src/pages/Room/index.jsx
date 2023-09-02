@@ -12,6 +12,18 @@ const Room=({user,socket,users})=>{
     const [openedUserBar,setOpenedUserBar] = React.useState(false)
     const [openedChatBar,setOpenedChatBar] = React.useState(false)
 
+    React.useEffect(() => {
+        socket.on("message", (data) => {
+          toast.info(data.message);
+        });
+      }, []);
+      React.useEffect(() => {
+        socket.on("users", (data) => {
+          setUsers(data);
+          setUserNo(data.length);
+        });
+      }, []);
+
     const  handleCanvasClear=()=>{
         const canvas = canvasRef.current;
         const ctx = canvas.getContext("2d");
@@ -41,7 +53,7 @@ const Room=({user,socket,users})=>{
         <div>
         <button onClick={()=>setOpenedUserBar(true)} >Users</button>
         <button onClick={()=>setOpenedChatBar(true)} >Chat</button>
-        <div>Welcome to whiteboard sharing app<span>[users online:{users.length}]</span></div>
+        <div className="display-5 pt-4 pb-3 text-center">Welcome to whiteboard sharing app<span>[users online:{users.length}]</span></div>
        {console.log(users.length)}
         </div>
         <div>
@@ -80,8 +92,8 @@ const Room=({user,socket,users})=>{
               }
 
                 <div>
-                <div>
-                    <div>
+                <div className="col-md-3">
+                    <div className="form-check form-check-inline">
                         <label htmlFor='Pencil'>Pencil</label>
                         <input 
                     type ="radio"
@@ -92,7 +104,7 @@ const Room=({user,socket,users})=>{
                     onChange={(e)=>SetTool(e.target.value)}
                     />
                     </div>
-                    <div>
+                    <div className="form-check form-check-inline">
                         <label htmlFor='line'>line</label>
                     <input
                     type="radio"
@@ -103,7 +115,7 @@ const Room=({user,socket,users})=>{
                     onChange={(e)=>SetTool(e.target.value)}
                     />
                     </div>
-                    <div>
+                    <div className="form-check form-check-inline">
                         <label htmlFor='rect'>Rectangle</label>
                     <input
                     type="radio"
@@ -115,8 +127,8 @@ const Room=({user,socket,users})=>{
                     />
                     </div>
                 </div>
-                <div>
-                    <div>
+                <div className="col-md-2">
+                    <div className="color-picker d-flex align-items-center justify-content-center">
                         <label htmlFor="color">Select Color</label>
                         <input
                         type="color"
@@ -127,18 +139,26 @@ const Room=({user,socket,users})=>{
                         />
                     </div>
                 </div>
-                <div>
+                <div className="col-md-2">
                     <button 
                     disabled={elements.length===0}
                     onClick={()=>Undo()}
+                    className="btn btn-outline-primary"
+                    type = "button"
                     >Undo</button>
                     <button
                     disabled={history.length===0}
                     onClick={()=>Redo()}
+                    className="btn btn-outline-primary ml-2"
+                    type = "button"
                     >Redo</button>
                 </div>
-                <div>
-                    <button onClick={handleCanvasClear}>Clear Canvas</button>
+                <div className="col-md-1">
+                <div className="color-picker d-flex align-items-center justify-content-center">
+                    <button 
+                    className="btn btn-danger"
+                    onClick={handleCanvasClear}>Clear Canvas</button>
+                </div>
                 </div>
                 </div>
 

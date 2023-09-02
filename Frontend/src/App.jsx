@@ -35,8 +35,9 @@ const App=()=> {
         console.log("something went wrong");
       }
     });
-    
+    console.log("dfsfs");
     socket.on("allUsers",(data)=>{
+      console.log("sdfd");
       setUsers(data);
     })
 
@@ -74,7 +75,7 @@ const App=()=> {
     <ToastContainer/>
       <Routes>
         <Route path="/" element={<Forms uuid={uuid} socket={socket} setUser={setUser}/>}/>
-        <Route path="/:roomId" element={<Room user={user} socket={socket} users={users}/>}/>
+        <Route path="/:roomId" element={<Room userNo={userNo} setUserNo={setUserNo} user={user} socket={socket} users={users}/>}/>
       </Routes>
     
     </>

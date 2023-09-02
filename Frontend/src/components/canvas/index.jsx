@@ -228,11 +228,12 @@ const WhiteBoard =({canvasRef,ctxRef,elements,SetElements,tool,color,user,socket
     return (
     <>
     <div
-    style={{height:"100vh",width:"100vw",overflow:"hidden"}} 
+    // style={{height:"100vh",width:"100vw",overflow:"hidden"}} 
+    className="col-md-8 overflow-hidden border border-dark px-0 mx-auto mt-3"
+      style={{ height: "500px" }}
     onMouseDown={handleMouseDown}
     onMouseMove={handleMouseMove}
     onMouseUp={handleMouseUp}
-    className="shadow-lg"
     >
     <canvas  
         className='bg-white'
