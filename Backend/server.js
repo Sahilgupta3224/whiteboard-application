@@ -1,14 +1,6 @@
 const express = require('express');
 const app = express();
 const cors = require("cors")
-// Enable CORS
-/*app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  next();
-});
-*/
 const http = require("http");
 const{Server} = require("socket.io")
 const server = http.createServer(app);
@@ -43,7 +35,7 @@ io.on("connection",(socket)=>{
         socket.join(roomId)
         //socket.join(user.room);
         //const roomUsers = getUsers(user.room);
-        const users = addUser({name,roomId,userId,host,presenter,socketId:socket.roomId})
+        const users = addUser({name,roomId,userId,host,presenter})
         socket.emit("userIsJoined",{success:true,users});
         socket.broadcast.to(roomId).emit("userJoinedMessageBroadcasted",name)
         socket.broadcast.to(roomId).emit("allUsers",users);

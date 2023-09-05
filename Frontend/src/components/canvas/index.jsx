@@ -5,7 +5,7 @@ import { useState } from 'react';
 
 const roughGenerator = rough.generator();
 
-const WhiteBoard =({canvasRef,ctxRef,elements,SetElements,tool,color,user,socket})=>{
+const WhiteBoard =({canvasRef,ctxRef,elements,SetElements,tool,color,user,socket,strokeWidth,fillcolor})=>{
     const[image,setImage] = useState(null);
 
     useEffect(()=>{
@@ -64,6 +64,7 @@ const WhiteBoard =({canvasRef,ctxRef,elements,SetElements,tool,color,user,socket
     useEffect(()=>{
         if(canvasRef.current){
             ctxRef.current.strokeStyle = color;
+            // ctxRef.current.lineWidth = strokeWidth;
         }
     },[color]);
 
@@ -84,7 +85,7 @@ const WhiteBoard =({canvasRef,ctxRef,elements,SetElements,tool,color,user,socket
                 roughCanvas.linearPath(element.path,
                     {
                         stroke:element.color,
-                        strokeWidth:5,
+                        strokeWidth:element.strokeWidth,
                         roughness:0
                     }
                     );    
@@ -112,6 +113,30 @@ const WhiteBoard =({canvasRef,ctxRef,elements,SetElements,tool,color,user,socket
                         )
                 )
             }
+            if (element.type === "circle") {
+                roughCanvas.draw(
+                  roughGenerator.circle(element.offsetX, element.offsetY, element.radius, {
+                    stroke: element.color,
+                    strokeWidth: 5,
+                    roughness: 0,
+                  })
+                );
+              }
+              if (element.type === "oval") {
+                roughCanvas.draw(
+                  roughGenerator.ellipse(
+                    element.offsetX,
+                    element.offsetY,
+                    element.width,
+                    element.height,
+                    {
+                      stroke: element.color,
+                      strokeWidth: 5,
+                      roughness: 0,
+                    }
+                  )
+                );
+              }
         })
         const canvasImage = canvasRef.current.toDataURL();
         socket.emit("whiteboardData",canvasImage);
@@ -128,7 +153,9 @@ const WhiteBoard =({canvasRef,ctxRef,elements,SetElements,tool,color,user,socket
                   offsetY,
                   offsetX,
                   path: [[offsetX,offsetY]],
-                  stroke: color
+                  // stroke: color
+                  color,
+                  strokeWidth,
                 },
             ]);
         }
@@ -156,11 +183,35 @@ const WhiteBoard =({canvasRef,ctxRef,elements,SetElements,tool,color,user,socket
                     offsetX,
                     width:0,
                     height:0,
-                    stroke: color
+                    stroke: color,
+                    fill: fillcolor,
                 }
             ])
-        }        
-  
+        }
+        else if (tool === "circle") {
+            SetElements((prev) => [
+              ...prev,
+              {
+                type: "circle",
+                offsetY,
+                offsetX,
+                radius: 0,
+                stroke: color,
+              },
+            ]);
+          } else if (tool === "oval") {
+            SetElements((prev) => [
+              ...prev,
+              {
+                type: "oval",
+                offsetY,
+                offsetX,
+                width: 0,
+                height: 0,
+                stroke: color,
+              },
+            ]);
+          }        
         setIsDrawing(true);
     };
     const handleMouseMove = (e)=>{
@@ -190,7 +241,8 @@ const WhiteBoard =({canvasRef,ctxRef,elements,SetElements,tool,color,user,socket
                             return{
                                 ...ele,
                                 width:offsetX,
-                                height:offsetY
+                                height:offsetY,
+                                fill:fillcolor
                             };
                         }
                         else{
@@ -215,10 +267,38 @@ const WhiteBoard =({canvasRef,ctxRef,elements,SetElements,tool,color,user,socket
                             return ele;
                         };
                     })
-                
                 )
             }
-            
+            else if (tool === "circle") {
+                const { offsetX: startX, offsetY: startY } = elements[elements.length - 1];
+                const radius = Math.sqrt(Math.pow(startX - offsetX, 2) + Math.pow(startY - offsetY, 2));
+                SetElements((prev) =>
+                  prev.map((ele, index) => {
+                    if (index === elements.length - 1) {
+                      return {
+                        ...ele,
+                        radius,
+                      };
+                    } else {
+                      return ele;
+                    }
+                  })
+                );
+              } else if (tool === "oval") {
+                SetElements((prev) =>
+                  prev.map((ele, index) => {
+                    if (index === elements.length - 1) {
+                      return {
+                        ...ele,
+                        width: offsetX - ele.offsetX,
+                        height: offsetY - ele.offsetY,
+                      };
+                    } else {
+                      return ele;
+                    }
+                  })
+                );
+            }
         }
     };
     const handleMouseUp = (e)=>{
